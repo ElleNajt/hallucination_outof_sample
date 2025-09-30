@@ -128,6 +128,14 @@ venv/bin/python src/two_truths_and_a_lie.py --num-trials 3 --log-file logs/my_ex
 - JSONL log file with detailed results for each trial
 - Summary statistics if multiple trials
 
+**Results (N=100 trials):**
+- Probe accuracy: **86.7%** (85/98 successful trials)
+- Failed trials: 2 (timeouts)
+- Mean confidence ratio: 4.550
+- The probe successfully generalized to this out-of-distribution task format
+
+![Two Truths and a Lie Results](logs/two_truths_and_a_lie_20250930_015310_plot.png)
+
 ### 2. Two Truths About Me (`src/two_truths_about_me.py`)
 
 Variant where the model is given facts about a person and must generate two truths and a lie based on those facts.
@@ -156,6 +164,14 @@ venv/bin/python src/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job:
 - `--temperature`: Sampling temperature (default: 0.7)
 - `--num-trials`: Number of trials to run (default: 1)
 - `--log-file`: Path to log file (default: auto-generated with timestamp)
+
+**Results (N=100 trials):**
+- Probe accuracy: **87.0%** (87/100 successful trials)
+- Failed trials: 0
+- Mean confidence ratio: 3.407
+- The probe successfully generalized to this variant with slightly lower confidence ratios
+
+![Two Truths About Me Results](logs/two_truths_about_me_20250930_120638_plot.png)
 
 ## Additional Tools
 
