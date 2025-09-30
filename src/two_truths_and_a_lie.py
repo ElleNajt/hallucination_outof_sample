@@ -183,6 +183,7 @@ def run_experiment(
     topic: str,
     probe_id: str = "llama3_1_8b_lora_lambda_kl=0.5",
     temperature: float = 0.7,
+    model_name: str = "meta-llama/Meta-Llama-3.1-8B-Instruct",
 ) -> Dict[str, Any]:
     """Run a single two truths and a lie experiment."""
 
@@ -190,8 +191,10 @@ def run_experiment(
     print(f"TWO TRUTHS AND A LIE: {topic}")
     print(f"{'=' * 80}\n")
 
-    # Get service
+    # Get service and switch to the correct model
     service = get_probe_service()
+    print(f"🔄 Switching to model: {model_name}...")
+    service.switch_model.remote(model_name)
 
     # Step 1: Generate two truths and a lie
     print("🎲 Generating statements...")
@@ -323,7 +326,12 @@ def main():
         else:
             topic = args.topic
 
-        result = run_experiment(topic, args.probe_id, args.temperature)
+        result = run_experiment(
+            topic,
+            args.probe_id,
+            args.temperature,
+            model_name="meta-llama/Meta-Llama-3.1-8B-Instruct",
+        )
         if result["success"]:
             result["timestamp"] = datetime.now().isoformat()
             result["probe_id"] = args.probe_id
