@@ -125,7 +125,7 @@ venv/bin/python src/two_truths_and_a_lie.py --num-trials 3 --log-file logs/my_ex
 
 **Output:**
 - Console output showing each trial's results
-- JSONL log file with detailed results for each trial
+- JSON log file with detailed results for each trial
 - Summary statistics if multiple trials
 
 **Results (N=100 trials):**
@@ -295,8 +295,6 @@ Probes are from the `andyrdt/hallucination-probes` repository. Some available pr
 
 See the [repository](https://huggingface.co/andyrdt/hallucination-probes) for full list.
 
-## Logs
-
 ## Analyzing Results
 
 ### Plot Results
@@ -304,7 +302,7 @@ See the [repository](https://huggingface.co/andyrdt/hallucination-probes) for fu
 Analyze experiment results and plot accuracy vs confidence:
 
 ```bash
-# Plot results from a log file
+# Plot results from two truths experiments
 venv/bin/python src/plot_results.py logs/two_truths_and_a_lie_20250930_010301.jsonl
 
 # Save plot to specific location
@@ -322,16 +320,17 @@ The plotting script:
 
 ### Log Format
 
-All experiments save results to `logs/` directory in JSONL format (one JSON object per line).
+All experiments save results to `logs/` directory in pretty JSON format.
 
 Each log entry contains:
 - Timestamp
 - Probe ID and parameters
-- Generated statements
-- Probe scores for each statement
-- Probe's guess
-- Model's answer
-- Whether probe was correct
+- Generated statements/completions
+- Generated tokens with probe scores
+- Probe scores for each statement/token
+- Probe's guess (for two truths experiments)
+- Model's answer (for two truths experiments)
+- Whether probe was correct (for two truths experiments)
 
 ## Backend Configuration
 
