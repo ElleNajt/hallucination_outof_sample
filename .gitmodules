@@ -1,0 +1,3 @@
+[submodule "hallucination_probes"]
+	path = hallucination_probes
+	url = https://github.com/obalcells/hallucination_probes.git
