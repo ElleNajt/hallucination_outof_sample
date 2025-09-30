@@ -315,15 +315,20 @@ def run_syllogism_test(
         if "error" in result:
             return {"error": result["error"]}
 
-        # Calculate average probe score
+        # Calculate probe scores
         if result["probe_probs"]:
             avg_score = sum(result["probe_probs"]) / len(result["probe_probs"])
+            sum_score = sum(result["probe_probs"])
+            max_score = max(result["probe_probs"])
             results["valid_syllogisms"].append(
                 {
                     "syllogism": syllogism,
                     "prompt": prompt,
                     "generated": result["generated_text"],
+                    "generated_tokens": result.get("generated_tokens", []),
                     "avg_probe_score": avg_score,
+                    "sum_probe_score": sum_score,
+                    "max_probe_score": max_score,
                     "probe_probs": result["probe_probs"],
                 }
             )
@@ -349,12 +354,17 @@ def run_syllogism_test(
 
         if result["probe_probs"]:
             avg_score = sum(result["probe_probs"]) / len(result["probe_probs"])
+            sum_score = sum(result["probe_probs"])
+            max_score = max(result["probe_probs"])
             results["invalid_syllogisms"].append(
                 {
                     "syllogism": syllogism,
                     "prompt": prompt,
                     "generated": result["generated_text"],
+                    "generated_tokens": result.get("generated_tokens", []),
                     "avg_probe_score": avg_score,
+                    "sum_probe_score": sum_score,
+                    "max_probe_score": max_score,
                     "probe_probs": result["probe_probs"],
                 }
             )

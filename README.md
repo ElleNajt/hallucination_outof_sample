@@ -205,13 +205,23 @@ venv/bin/python src/syllogistic_reasoning.py --num-trials 5 --log-file logs/my_s
 - `--log-file`: Path to log file (default: auto-generated with timestamp in logs/)
 
 **Results (N=100 pairs, 200 syllogisms total):**
-- Mean probe score for valid syllogisms: **0.1980** (std: 0.0838)
-- Mean probe score for invalid syllogisms: **0.2810** (std: 0.0815)
-- Difference: **+0.0830** (42% higher for invalid syllogisms)
 
-The probe produces significantly higher hallucination scores for invalid syllogisms compared to valid ones. The model is prompted to complete only the missing word(s) in the conclusion, allowing the probe to directly measure hallucination on the logical reasoning step itself.
+| Metric | Valid Syllogisms | Invalid Syllogisms | Difference |
+|--------|------------------|-------------------|------------|
+| **Average** probe score | 0.1937 (±0.0825) | 0.2923 (±0.0813) | +0.0986 (51% higher) |
+| **Sum** probe score | 0.5510 (±0.3560) | 0.9634 (±0.6911) | +0.4124 (75% higher) |
+| **Max** probe score | 0.3502 (±0.1339) | 0.5378 (±0.1311) | +0.1876 (54% higher) |
 
-![Syllogistic Reasoning Results](logs/syllogistic_reasoning_20250930_163800_histogram.png)
+The probe produces significantly higher hallucination scores for invalid syllogisms across all metrics. The model is prompted to complete only the missing word(s) in the conclusion, allowing the probe to directly measure hallucination on the logical reasoning step itself.
+
+**Average Probe Score:**
+![Average](logs/syllogistic_reasoning_20250930_165545_histogram_avg.png)
+
+**Sum Probe Score:**
+![Sum](logs/syllogistic_reasoning_20250930_165545_histogram_sum.png)
+
+**Max Probe Score:**
+![Max](logs/syllogistic_reasoning_20250930_165545_histogram_max.png)
 
 **Example prompt and completion:**
 ```
@@ -230,11 +240,13 @@ Model output: "D" (probe score: 0.12)
 
 **Analyzing Results:**
 ```bash
-# Plot histogram of probe scores
-venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_163800.jsonl
+# Plot histogram of probe scores (avg, sum, or max)
+venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type avg
+venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type sum
+venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type max
 
 # Custom output location and bins
-venv/bin/python src/plot_syllogism_histogram.py logs/experiment.jsonl --output plots/histogram.png --bins 40
+venv/bin/python src/plot_syllogism_histogram.py logs/experiment.jsonl --score-type avg --output plots/histogram.png --bins 40
 ```
 
 ## Additional Tools
