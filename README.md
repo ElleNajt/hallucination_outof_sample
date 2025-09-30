@@ -14,7 +14,7 @@ cd hallucination_outof_sample
 # 2. Create virtual environment and install dependencies
 python -m venv venv
 source venv/bin/activate
-pip install modal streamlit torch transformers accelerate huggingface_hub
+pip install -r requirements.txt
 
 # 3. Configure HuggingFace token
 echo "HF_TOKEN=your_hf_token_here" > hallucination_probes/.env
@@ -50,13 +50,8 @@ git submodule update --init --recursive
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install core dependencies
-pip install modal streamlit
-
-# Install hallucination_probes dependencies
-cd hallucination_probes
-pip install torch transformers peft datasets numpy tqdm pyyaml python-dotenv jaxtyping beartype scikit-learn matplotlib seaborn anthropic simple-parsing pydantic rouge-score plotly accelerate huggingface_hub
-cd ..
+# Install all dependencies
+pip install -r requirements.txt
 ```
 
 ### Configuration
