@@ -114,7 +114,9 @@ def plot_accuracy_by_confidence(
 
     # Plot accuracy vs confidence
     ax1.plot(bin_centers, bin_accuracies, "o-", linewidth=2, markersize=8)
-    ax1.axhline(y=0.5, color="r", linestyle="--", alpha=0.5, label="Random chance")
+    ax1.axhline(
+        y=1 / 3, color="r", linestyle="--", alpha=0.5, label="Random chance (1/3)"
+    )
     ax1.set_ylabel("Accuracy", fontsize=12)
     ax1.set_ylim(0, 1.05)
     ax1.set_title(title, fontsize=14, fontweight="bold")
