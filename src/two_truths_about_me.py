@@ -84,8 +84,8 @@ def run_experiment(
 
     # Get service and switch to the correct model
     service = get_probe_service()
-    print(f"🔄 Switching to model: {model_name}...")
-    service.switch_model.remote(model_name)
+    # print(f"🔄 Switching to model: {model_name}...")
+    # service.switch_model.remote(model_name)
 
     # Step 1: Generate two truths and a lie
     print("🎲 Generating statements...")
