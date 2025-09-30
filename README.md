@@ -205,25 +205,20 @@ venv/bin/python src/syllogistic_reasoning.py --num-trials 5 --log-file logs/my_s
 - `--log-file`: Path to log file (default: auto-generated with timestamp in logs/)
 
 **Results (N=10 trials, 60 syllogisms):**
-- Overall accuracy: **83.3%** (50/60 correctly classified)
-- Valid syllogisms correctly identified: **86.7%** (26/30)
-- Invalid syllogisms correctly identified: **80.0%** (24/30)
-- Mean probe score for valid syllogisms: 0.0110
-- Mean probe score for invalid syllogisms: 0.0252
-- Optimal threshold: 0.0163
-- Random chance baseline: **50.0%**
+- Mean probe score for valid syllogisms: **0.0110** (std: 0.0057)
+- Mean probe score for invalid syllogisms: **0.0252** (std: 0.0132)
 
-The probe successfully distinguishes valid from invalid logical reasoning, with valid syllogisms producing significantly lower hallucination scores than invalid ones.
+The probe produces significantly lower hallucination scores for valid syllogisms compared to invalid ones, indicating it detects logical reasoning errors.
 
-![Syllogistic Reasoning Results](logs/syllogistic_reasoning_20250930_133540_plot.png)
+![Syllogistic Reasoning Results](logs/syllogistic_reasoning_20250930_133540_histogram.png)
 
 **Analyzing Results:**
 ```bash
-# Analyze and plot results from a log file
-venv/bin/python src/analyze_syllogisms.py logs/syllogistic_reasoning_20250930_133540.jsonl
+# Plot histogram of probe scores
+venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_133540.jsonl
 
-# Custom output location
-venv/bin/python src/analyze_syllogisms.py logs/experiment.jsonl --output plots/results.png
+# Custom output location and bins
+venv/bin/python src/plot_syllogism_histogram.py logs/experiment.jsonl --output plots/histogram.png --bins 40
 ```
 
 ## Additional Tools
