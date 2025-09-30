@@ -205,10 +205,32 @@ See the [repository](https://huggingface.co/andyrdt/hallucination-probes) for fu
 
 ## Logs
 
-All experiments save results to `logs/` directory in JSONL format (one JSON object per line), making it easy to:
-- Analyze results programmatically
-- Aggregate statistics across multiple runs
-- Compare different probes or parameters
+## Analyzing Results
+
+### Plot Results
+
+Analyze experiment results and plot accuracy vs confidence:
+
+```bash
+# Plot results from a log file
+venv/bin/python src/plot_results.py logs/two_truths_and_a_lie_20250930_010301.jsonl
+
+# Save plot to specific location
+venv/bin/python src/plot_results.py logs/experiment.jsonl --output plots/results.png
+
+# Custom title and number of bins
+venv/bin/python src/plot_results.py logs/experiment.jsonl --title "My Experiment" --bins 15
+```
+
+The plotting script:
+- Calculates confidence as the ratio of max probe score to second-highest score
+- Bins trials by confidence and plots accuracy for each bin
+- Shows histogram of confidence distribution
+- Prints summary statistics
+
+### Log Format
+
+All experiments save results to `logs/` directory in JSONL format (one JSON object per line).
 
 Each log entry contains:
 - Timestamp

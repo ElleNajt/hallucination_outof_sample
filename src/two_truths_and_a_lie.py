@@ -45,6 +45,9 @@ Respond with ONLY the topic, nothing else."""
         temperature=1.0,
     )
 
+    if "error" in result:
+        raise RuntimeError(f"Topic generation failed: {result['error']}")
+
     return result["generated_text"].strip()
 
 
@@ -312,46 +315,96 @@ def main():
     service = get_probe_service() if args.topic is None else None
 
     results = []
+    failed_trials = []
+
     for i in range(args.num_trials):
         if args.num_trials > 1:
             print(f"\n\n{'#' * 80}")
             print(f"TRIAL {i + 1}/{args.num_trials}")
             print(f"{'#' * 80}")
 
-        # Generate random topic if not provided
-        if args.topic is None:
-            if service is None:
-                service = get_probe_service()
-            topic = generate_random_topic(service, args.probe_id)
-        else:
-            topic = args.topic
+        try:
+            # Generate random topic if not provided
+            if args.topic is None:
+                if service is None:
+                    service = get_probe_service()
+                topic = generate_random_topic(service, args.probe_id)
+            else:
+                topic = args.topic
 
-        result = run_experiment(
-            topic,
-            args.probe_id,
-            args.temperature,
-            model_name="meta-llama/Meta-Llama-3.1-8B-Instruct",
-        )
-        if result["success"]:
-            result["timestamp"] = datetime.now().isoformat()
-            result["probe_id"] = args.probe_id
-            result["temperature"] = args.temperature
-            results.append(result)
+            result = run_experiment(
+                topic,
+                args.probe_id,
+                args.temperature,
+                model_name="meta-llama/Meta-Llama-3.1-8B-Instruct",
+            )
 
-            # Write to log file (JSONL format - one JSON per line)
+            if result["success"]:
+                result["timestamp"] = datetime.now().isoformat()
+                result["probe_id"] = args.probe_id
+                result["temperature"] = args.temperature
+                results.append(result)
+
+                # Write to log file (JSONL format - one JSON per line)
+                with open(log_path, "a") as f:
+                    json.dump(result, f)
+                    f.write("\n")
+            else:
+                # Log failed trial
+                error_msg = result.get("error", "Unknown error")
+                print(f"❌ Trial {i + 1} failed: {error_msg}")
+                failed_trials.append({"trial": i + 1, "error": error_msg})
+
+                # Write error to log file
+                with open(log_path, "a") as f:
+                    json.dump(
+                        {
+                            "success": False,
+                            "trial": i + 1,
+                            "error": error_msg,
+                            "timestamp": datetime.now().isoformat(),
+                        },
+                        f,
+                    )
+                    f.write("\n")
+
+        except Exception as e:
+            # Catch any unexpected errors
+            error_msg = str(e)
+            print(f"❌ Trial {i + 1} failed with exception: {error_msg}")
+            failed_trials.append({"trial": i + 1, "error": error_msg})
+
+            # Write error to log file
             with open(log_path, "a") as f:
-                f.write(json.dumps(result) + "\n")
+                json.dump(
+                    {
+                        "success": False,
+                        "trial": i + 1,
+                        "error": error_msg,
+                        "timestamp": datetime.now().isoformat(),
+                    },
+                    f,
+                )
+                f.write("\n")
 
     # Summary
-    if args.num_trials > 1 and results:
+    if args.num_trials > 1:
         print(f"\n\n{'=' * 80}")
         print("SUMMARY")
         print(f"{'=' * 80}")
-        print(f"Total trials: {len(results)}")
-        correct = sum(1 for r in results if r["probe_correct"])
-        print(
-            f"Probe correct: {correct}/{len(results)} ({correct / len(results) * 100:.1f}%)"
-        )
+        print(f"Total trials attempted: {args.num_trials}")
+        print(f"Successful trials: {len(results)}")
+        print(f"Failed trials: {len(failed_trials)}")
+
+        if results:
+            correct = sum(1 for r in results if r["probe_correct"])
+            print(
+                f"Probe correct: {correct}/{len(results)} ({correct / len(results) * 100:.1f}%)"
+            )
+
+        if failed_trials:
+            print(f"\nFailed trial numbers: {[f['trial'] for f in failed_trials]}")
+
         print(f"{'=' * 80}\n")
 
     print(f"\n✅ Results saved to: {args.log_file}")
