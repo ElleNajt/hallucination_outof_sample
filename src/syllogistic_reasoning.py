@@ -263,7 +263,7 @@ def format_syllogism_prompt(syllogism: Dict[str, Any]) -> str:
         [f"{i + 1}. {p}" for i, p in enumerate(syllogism["premises"])]
     )
 
-    # Extract the last word for completion
+    # Extract the last word(s) for completion
     conclusion_words = syllogism["conclusion"].split()
     prompt_part = " ".join(conclusion_words[:-1])
     # Expected completion is the last word
@@ -272,7 +272,7 @@ def format_syllogism_prompt(syllogism: Dict[str, Any]) -> str:
 
 {premises_text}
 
-Based on logical reasoning, complete the conclusion:
+Complete this conclusion with ONLY the missing word(s). Do not explain or add extra text.
 
 Therefore, {prompt_part} _____"""
 
@@ -321,6 +321,7 @@ def run_syllogism_test(
             results["valid_syllogisms"].append(
                 {
                     "syllogism": syllogism,
+                    "prompt": prompt,
                     "generated": result["generated_text"],
                     "avg_probe_score": avg_score,
                     "probe_probs": result["probe_probs"],
@@ -351,6 +352,7 @@ def run_syllogism_test(
             results["invalid_syllogisms"].append(
                 {
                     "syllogism": syllogism,
+                    "prompt": prompt,
                     "generated": result["generated_text"],
                     "avg_probe_score": avg_score,
                     "probe_probs": result["probe_probs"],
@@ -362,13 +364,15 @@ def run_syllogism_test(
 
 def run_experiment(
     num_trials: int = 10,
-    num_valid: int = 3,
-    num_invalid: int = 3,
     probe_id: str = "llama3_1_8b_lora_lambda_kl=0.5",
     temperature: float = 0.0,
     model_name: str = "meta-llama/Meta-Llama-3.1-8B-Instruct",
 ) -> List[Dict[str, Any]]:
-    """Run syllogistic reasoning experiments."""
+    """Run syllogistic reasoning experiments.
+
+    Args:
+        num_trials: Number of syllogism pairs to test (1 valid + 1 invalid each)
+    """
 
     service = get_probe_service()
     # print(f"🔄 Switching to model: {model_name}...")
@@ -384,7 +388,7 @@ def run_experiment(
 
         try:
             result = run_syllogism_test(
-                service, probe_id, temperature, num_valid, num_invalid
+                service, probe_id, temperature, num_valid=1, num_invalid=1
             )
 
             if "error" in result:
@@ -540,17 +544,13 @@ def main():
     # Run experiment
     results = run_experiment(
         num_trials=args.num_trials,
-        num_valid=args.num_valid,
-        num_invalid=args.num_invalid,
         probe_id=args.probe_id,
         temperature=args.temperature,
     )
 
     # Write to log file
     with open(log_path, "w") as f:
-        for result in results:
-            json.dump(result, f)
-            f.write("\n")
+        json.dump(results, f, indent=2)
 
     print(f"\n✅ Results saved to: {args.log_file}")
 

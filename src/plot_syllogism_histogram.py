@@ -11,12 +11,18 @@ import numpy as np
 def plot_histogram(log_file, output_file=None, bins=30):
     """Plot histogram of probe scores."""
 
-    # Load all trials
-    trials = []
+    # Load all trials (handle both JSONL and JSON array formats)
     with open(log_file, 'r') as f:
-        for line in f:
-            if line.strip():
-                trials.append(json.loads(line))
+        content = f.read()
+        if content.strip().startswith('['):
+            # JSON array format
+            trials = json.loads(content)
+        else:
+            # JSONL format
+            trials = []
+            for line in content.split('\n'):
+                if line.strip():
+                    trials.append(json.loads(line))
 
     # Collect scores
     valid_scores = []

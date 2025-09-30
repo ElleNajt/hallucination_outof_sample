@@ -1,0 +1,936 @@
+[
+  {
+    "valid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All A are B",
+            "All B are C",
+            "All C are D"
+          ],
+          "conclusion": "All A are D",
+          "formal_premises": [
+            "all_A_are_B",
+            "all_B_are_C",
+            "all_C_are_D"
+          ],
+          "formal_conclusion": "all_A_are_D",
+          "term_mapping": {
+            "P": "objects",
+            "Q": "chairs",
+            "R": "tables",
+            "S": "boxes"
+          },
+          "pattern_name": "Extended transitivity",
+          "pattern_key": "chain",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All A are B\n2. All B are C\n3. All C are D\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All A are _____",
+        "generated": "D",
+        "avg_probe_score": 0.103515625,
+        "probe_probs": [
+          0.20703125,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All shrubs are vegetables",
+            "All vegetables are plants"
+          ],
+          "conclusion": "All shrubs are plants",
+          "formal_premises": [
+            "all_P_are_Q",
+            "all_Q_are_R"
+          ],
+          "formal_conclusion": "all_P_are_R",
+          "term_mapping": {
+            "P": "shrubs",
+            "Q": "vegetables",
+            "R": "plants"
+          },
+          "pattern_name": "Barbara (transitive)",
+          "pattern_key": "barbara",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All shrubs are vegetables\n2. All vegetables are plants\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All shrubs are _____",
+        "generated": "plants",
+        "avg_probe_score": 0.09375,
+        "probe_probs": [
+          0.1875,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "No beasts are cats",
+            "Some dogs are beasts"
+          ],
+          "conclusion": "Some dogs are not cats",
+          "formal_premises": [
+            "no_P_are_Q",
+            "some_R_are_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "beasts",
+            "Q": "cats",
+            "R": "dogs"
+          },
+          "pattern_name": "Ferio",
+          "pattern_key": "ferio",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. No beasts are cats\n2. Some dogs are beasts\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some dogs are not _____",
+        "generated": "cats.",
+        "avg_probe_score": 0.251953125,
+        "probe_probs": [
+          0.486328125,
+          0.26953125,
+          0.0
+        ]
+      }
+    ],
+    "invalid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All workers are teachers",
+            "Some doctors are teachers"
+          ],
+          "conclusion": "Some doctors are workers",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_Q"
+          ],
+          "formal_conclusion": "some_R_are_P",
+          "term_mapping": {
+            "P": "workers",
+            "Q": "teachers",
+            "R": "doctors"
+          },
+          "pattern_name": "Affirming the consequent",
+          "pattern_key": "affirming_consequent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All workers are teachers\n2. Some doctors are teachers\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some doctors are _____",
+        "generated": "workers",
+        "avg_probe_score": 0.2314453125,
+        "probe_probs": [
+          0.462890625,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All thoughts are notions"
+          ],
+          "conclusion": "All notions are thoughts",
+          "formal_premises": [
+            "all_P_are_Q"
+          ],
+          "formal_conclusion": "all_Q_are_P",
+          "term_mapping": {
+            "P": "thoughts",
+            "Q": "notions"
+          },
+          "pattern_name": "Invalid conversion",
+          "pattern_key": "reversed_universal",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All thoughts are notions\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All notions are _____",
+        "generated": "thoughts.",
+        "avg_probe_score": 0.198974609375,
+        "probe_probs": [
+          0.32421875,
+          0.322265625,
+          0.1494140625,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All dogs are mammals"
+          ],
+          "conclusion": "All mammals are dogs",
+          "formal_premises": [
+            "all_P_are_Q"
+          ],
+          "formal_conclusion": "all_Q_are_P",
+          "term_mapping": {
+            "P": "dogs",
+            "Q": "mammals"
+          },
+          "pattern_name": "Invalid conversion",
+          "pattern_key": "reversed_universal",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All dogs are mammals\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All mammals are _____",
+        "generated": "dogs.",
+        "avg_probe_score": 0.3424479166666667,
+        "probe_probs": [
+          0.69140625,
+          0.3359375,
+          0.0
+        ]
+      }
+    ],
+    "trial": 1,
+    "timestamp": "2025-09-30T16:27:16.576697"
+  },
+  {
+    "valid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All cats are fish",
+            "No fish are dogs"
+          ],
+          "conclusion": "No cats are dogs",
+          "formal_premises": [
+            "all_P_are_Q",
+            "no_Q_are_R"
+          ],
+          "formal_conclusion": "no_P_are_R",
+          "term_mapping": {
+            "P": "cats",
+            "Q": "fish",
+            "R": "dogs"
+          },
+          "pattern_name": "Celarent",
+          "pattern_key": "celarent",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All cats are fish\n2. No fish are dogs\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, No cats are _____",
+        "generated": "dogs.",
+        "avg_probe_score": 0.1982421875,
+        "probe_probs": [
+          0.373046875,
+          0.2216796875,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All A are B",
+            "All B are C",
+            "All C are D"
+          ],
+          "conclusion": "All A are D",
+          "formal_premises": [
+            "all_A_are_B",
+            "all_B_are_C",
+            "all_C_are_D"
+          ],
+          "formal_conclusion": "all_A_are_D",
+          "term_mapping": {
+            "P": "books",
+            "Q": "objects",
+            "R": "chairs",
+            "S": "tables"
+          },
+          "pattern_name": "Extended transitivity",
+          "pattern_key": "chain",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All A are B\n2. All B are C\n3. All C are D\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All A are _____",
+        "generated": "D",
+        "avg_probe_score": 0.10546875,
+        "probe_probs": [
+          0.2109375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All A are B",
+            "All B are C",
+            "All C are D"
+          ],
+          "conclusion": "All A are D",
+          "formal_premises": [
+            "all_A_are_B",
+            "all_B_are_C",
+            "all_C_are_D"
+          ],
+          "formal_conclusion": "all_A_are_D",
+          "term_mapping": {
+            "P": "professionals",
+            "Q": "individuals",
+            "R": "students",
+            "S": "workers"
+          },
+          "pattern_name": "Extended transitivity",
+          "pattern_key": "chain",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All A are B\n2. All B are C\n3. All C are D\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All A are _____",
+        "generated": "D",
+        "avg_probe_score": 0.103515625,
+        "probe_probs": [
+          0.20703125,
+          0.0
+        ]
+      }
+    ],
+    "invalid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All containers are tables",
+            "Some items are not containers"
+          ],
+          "conclusion": "Some items are not tables",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_not_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "containers",
+            "Q": "tables",
+            "R": "items"
+          },
+          "pattern_name": "Denying the antecedent",
+          "pattern_key": "denying_antecedent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All containers are tables\n2. Some items are not containers\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some items are not _____",
+        "generated": "tables",
+        "avg_probe_score": 0.265625,
+        "probe_probs": [
+          0.53125,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All birds are reptiles",
+            "Some mammals are reptiles"
+          ],
+          "conclusion": "Some mammals are birds",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_Q"
+          ],
+          "formal_conclusion": "some_R_are_P",
+          "term_mapping": {
+            "P": "birds",
+            "Q": "reptiles",
+            "R": "mammals"
+          },
+          "pattern_name": "Affirming the consequent",
+          "pattern_key": "affirming_consequent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All birds are reptiles\n2. Some mammals are reptiles\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some mammals are _____",
+        "generated": "birds",
+        "avg_probe_score": 0.373046875,
+        "probe_probs": [
+          0.74609375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All trees are roses",
+            "Some shrubs are not trees"
+          ],
+          "conclusion": "Some shrubs are not roses",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_not_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "trees",
+            "Q": "roses",
+            "R": "shrubs"
+          },
+          "pattern_name": "Denying the antecedent",
+          "pattern_key": "denying_antecedent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All trees are roses\n2. Some shrubs are not trees\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some shrubs are not _____",
+        "generated": "roses",
+        "avg_probe_score": 0.3450520833333333,
+        "probe_probs": [
+          0.46875,
+          0.56640625,
+          0.0
+        ]
+      }
+    ],
+    "trial": 2,
+    "timestamp": "2025-09-30T16:27:17.651576"
+  },
+  {
+    "valid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "No flowers are roses",
+            "Some plants are flowers"
+          ],
+          "conclusion": "Some plants are not roses",
+          "formal_premises": [
+            "no_P_are_Q",
+            "some_R_are_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "flowers",
+            "Q": "roses",
+            "R": "plants"
+          },
+          "pattern_name": "Ferio",
+          "pattern_key": "ferio",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. No flowers are roses\n2. Some plants are flowers\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some plants are not _____",
+        "generated": "roses",
+        "avg_probe_score": 0.3098958333333333,
+        "probe_probs": [
+          0.4453125,
+          0.484375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All principles are ideas",
+            "No ideas are beliefs"
+          ],
+          "conclusion": "No principles are beliefs",
+          "formal_premises": [
+            "all_P_are_Q",
+            "no_Q_are_R"
+          ],
+          "formal_conclusion": "no_P_are_R",
+          "term_mapping": {
+            "P": "principles",
+            "Q": "ideas",
+            "R": "beliefs"
+          },
+          "pattern_name": "Celarent",
+          "pattern_key": "celarent",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All principles are ideas\n2. No ideas are beliefs\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, No principles are _____",
+        "generated": "beliefs",
+        "avg_probe_score": 0.2421875,
+        "probe_probs": [
+          0.3125,
+          0.4140625,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All creatures are dogs",
+            "No dogs are fish"
+          ],
+          "conclusion": "No creatures are fish",
+          "formal_premises": [
+            "all_P_are_Q",
+            "no_Q_are_R"
+          ],
+          "formal_conclusion": "no_P_are_R",
+          "term_mapping": {
+            "P": "creatures",
+            "Q": "dogs",
+            "R": "fish"
+          },
+          "pattern_name": "Celarent",
+          "pattern_key": "celarent",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All creatures are dogs\n2. No dogs are fish\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, No creatures are _____",
+        "generated": "fish.",
+        "avg_probe_score": 0.24934895833333334,
+        "probe_probs": [
+          0.4921875,
+          0.255859375,
+          0.0
+        ]
+      }
+    ],
+    "invalid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All notions are principles",
+            "Some principles are beliefs"
+          ],
+          "conclusion": "All notions are beliefs",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_Q_are_R"
+          ],
+          "formal_conclusion": "all_P_are_R",
+          "term_mapping": {
+            "P": "notions",
+            "Q": "principles",
+            "R": "beliefs"
+          },
+          "pattern_name": "Existential to universal",
+          "pattern_key": "existential_to_universal",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All notions are principles\n2. Some principles are beliefs\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All notions are _____",
+        "generated": "beliefs",
+        "avg_probe_score": 0.265625,
+        "probe_probs": [
+          0.26953125,
+          0.52734375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All professionals are doctors",
+            "Some students are doctors"
+          ],
+          "conclusion": "Some students are professionals",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_Q"
+          ],
+          "formal_conclusion": "some_R_are_P",
+          "term_mapping": {
+            "P": "professionals",
+            "Q": "doctors",
+            "R": "students"
+          },
+          "pattern_name": "Affirming the consequent",
+          "pattern_key": "affirming_consequent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All professionals are doctors\n2. Some students are doctors\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some students are _____",
+        "generated": "professionals.",
+        "avg_probe_score": 0.33740234375,
+        "probe_probs": [
+          0.515625,
+          0.546875,
+          0.287109375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All tables are items",
+            "Some things are not tables"
+          ],
+          "conclusion": "Some things are not items",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_not_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "tables",
+            "Q": "items",
+            "R": "things"
+          },
+          "pattern_name": "Denying the antecedent",
+          "pattern_key": "denying_antecedent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All tables are items\n2. Some things are not tables\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some things are not _____",
+        "generated": "tables",
+        "avg_probe_score": 0.173828125,
+        "probe_probs": [
+          0.34765625,
+          0.0
+        ]
+      }
+    ],
+    "trial": 3,
+    "timestamp": "2025-09-30T16:27:18.804870"
+  },
+  {
+    "valid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All A are B",
+            "All B are C",
+            "All C are D"
+          ],
+          "conclusion": "All A are D",
+          "formal_premises": [
+            "all_A_are_B",
+            "all_B_are_C",
+            "all_C_are_D"
+          ],
+          "formal_conclusion": "all_A_are_D",
+          "term_mapping": {
+            "P": "thoughts",
+            "Q": "concepts",
+            "R": "ideas",
+            "S": "theories"
+          },
+          "pattern_name": "Extended transitivity",
+          "pattern_key": "chain",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All A are B\n2. All B are C\n3. All C are D\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All A are _____",
+        "generated": "D",
+        "avg_probe_score": 0.1015625,
+        "probe_probs": [
+          0.203125,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All A are B",
+            "All B are C",
+            "All C are D"
+          ],
+          "conclusion": "All A are D",
+          "formal_premises": [
+            "all_A_are_B",
+            "all_B_are_C",
+            "all_C_are_D"
+          ],
+          "formal_conclusion": "all_A_are_D",
+          "term_mapping": {
+            "P": "cats",
+            "Q": "creatures",
+            "R": "beasts",
+            "S": "mammals"
+          },
+          "pattern_name": "Extended transitivity",
+          "pattern_key": "chain",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All A are B\n2. All B are C\n3. All C are D\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All A are _____",
+        "generated": "D",
+        "avg_probe_score": 0.10595703125,
+        "probe_probs": [
+          0.2119140625,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All values are ideas",
+            "Some theories are values"
+          ],
+          "conclusion": "Some theories are ideas",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_P"
+          ],
+          "formal_conclusion": "some_R_are_Q",
+          "term_mapping": {
+            "P": "values",
+            "Q": "ideas",
+            "R": "theories"
+          },
+          "pattern_name": "Darii",
+          "pattern_key": "darii",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All values are ideas\n2. Some theories are values\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some theories are _____",
+        "generated": "values.",
+        "avg_probe_score": 0.24934895833333334,
+        "probe_probs": [
+          0.51953125,
+          0.228515625,
+          0.0
+        ]
+      }
+    ],
+    "invalid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All workers are artists"
+          ],
+          "conclusion": "All artists are workers",
+          "formal_premises": [
+            "all_P_are_Q"
+          ],
+          "formal_conclusion": "all_Q_are_P",
+          "term_mapping": {
+            "P": "workers",
+            "Q": "artists"
+          },
+          "pattern_name": "Invalid conversion",
+          "pattern_key": "reversed_universal",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All workers are artists\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All artists are _____",
+        "generated": "workers",
+        "avg_probe_score": 0.1181640625,
+        "probe_probs": [
+          0.236328125,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All containers are books",
+            "Some items are not containers"
+          ],
+          "conclusion": "Some items are not books",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_not_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "containers",
+            "Q": "books",
+            "R": "items"
+          },
+          "pattern_name": "Denying the antecedent",
+          "pattern_key": "denying_antecedent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All containers are books\n2. Some items are not containers\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some items are not _____",
+        "generated": "books",
+        "avg_probe_score": 0.2265625,
+        "probe_probs": [
+          0.453125,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All persons are artists",
+            "Some artists are professionals"
+          ],
+          "conclusion": "All persons are professionals",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_Q_are_R"
+          ],
+          "formal_conclusion": "all_P_are_R",
+          "term_mapping": {
+            "P": "persons",
+            "Q": "artists",
+            "R": "professionals"
+          },
+          "pattern_name": "Existential to universal",
+          "pattern_key": "existential_to_universal",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All persons are artists\n2. Some artists are professionals\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All persons are _____",
+        "generated": "professionals.",
+        "avg_probe_score": 0.5283203125,
+        "probe_probs": [
+          0.7109375,
+          0.82421875,
+          0.578125,
+          0.0
+        ]
+      }
+    ],
+    "trial": 4,
+    "timestamp": "2025-09-30T16:27:19.917407"
+  },
+  {
+    "valid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "No birds are dogs",
+            "Some reptiles are birds"
+          ],
+          "conclusion": "Some reptiles are not dogs",
+          "formal_premises": [
+            "no_P_are_Q",
+            "some_R_are_P"
+          ],
+          "formal_conclusion": "some_R_are_not_Q",
+          "term_mapping": {
+            "P": "birds",
+            "Q": "dogs",
+            "R": "reptiles"
+          },
+          "pattern_name": "Ferio",
+          "pattern_key": "ferio",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. No birds are dogs\n2. Some reptiles are birds\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some reptiles are not _____",
+        "generated": "dogs.",
+        "avg_probe_score": 0.24934895833333334,
+        "probe_probs": [
+          0.470703125,
+          0.27734375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All boxes are tables",
+            "No tables are chairs"
+          ],
+          "conclusion": "No boxes are chairs",
+          "formal_premises": [
+            "all_P_are_Q",
+            "no_Q_are_R"
+          ],
+          "formal_conclusion": "no_P_are_R",
+          "term_mapping": {
+            "P": "boxes",
+            "Q": "tables",
+            "R": "chairs"
+          },
+          "pattern_name": "Celarent",
+          "pattern_key": "celarent",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All boxes are tables\n2. No tables are chairs\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, No boxes are _____",
+        "generated": "chairs",
+        "avg_probe_score": 0.1826171875,
+        "probe_probs": [
+          0.2333984375,
+          0.314453125,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All containers are books",
+            "Some objects are containers"
+          ],
+          "conclusion": "Some objects are books",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_P"
+          ],
+          "formal_conclusion": "some_R_are_Q",
+          "term_mapping": {
+            "P": "containers",
+            "Q": "books",
+            "R": "objects"
+          },
+          "pattern_name": "Darii",
+          "pattern_key": "darii",
+          "valid": true
+        },
+        "prompt": "Given the following premises:\n\n1. All containers are books\n2. Some objects are containers\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some objects are _____",
+        "generated": "books.",
+        "avg_probe_score": 0.1865234375,
+        "probe_probs": [
+          0.365234375,
+          0.1943359375,
+          0.0
+        ]
+      }
+    ],
+    "invalid_syllogisms": [
+      {
+        "syllogism": {
+          "premises": [
+            "All teachers are doctors",
+            "Some persons are doctors"
+          ],
+          "conclusion": "Some persons are teachers",
+          "formal_premises": [
+            "all_P_are_Q",
+            "some_R_are_Q"
+          ],
+          "formal_conclusion": "some_R_are_P",
+          "term_mapping": {
+            "P": "teachers",
+            "Q": "doctors",
+            "R": "persons"
+          },
+          "pattern_name": "Affirming the consequent",
+          "pattern_key": "affirming_consequent",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All teachers are doctors\n2. Some persons are doctors\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, Some persons are _____",
+        "generated": "teachers.",
+        "avg_probe_score": 0.19986979166666666,
+        "probe_probs": [
+          0.400390625,
+          0.19921875,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All values are ideas",
+            "No theories are values"
+          ],
+          "conclusion": "No theories are ideas",
+          "formal_premises": [
+            "all_P_are_Q",
+            "no_R_are_P"
+          ],
+          "formal_conclusion": "no_R_are_Q",
+          "term_mapping": {
+            "P": "values",
+            "Q": "ideas",
+            "R": "theories"
+          },
+          "pattern_name": "Illicit major term",
+          "pattern_key": "illicit_major",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All values are ideas\n2. No theories are values\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, No theories are _____",
+        "generated": "values.",
+        "avg_probe_score": 0.3444010416666667,
+        "probe_probs": [
+          0.68359375,
+          0.349609375,
+          0.0
+        ]
+      },
+      {
+        "syllogism": {
+          "premises": [
+            "All books are objects"
+          ],
+          "conclusion": "All objects are books",
+          "formal_premises": [
+            "all_P_are_Q"
+          ],
+          "formal_conclusion": "all_Q_are_P",
+          "term_mapping": {
+            "P": "books",
+            "Q": "objects"
+          },
+          "pattern_name": "Invalid conversion",
+          "pattern_key": "reversed_universal",
+          "valid": false
+        },
+        "prompt": "Given the following premises:\n\n1. All books are objects\n\nComplete this conclusion with ONLY the missing word(s). Do not explain or add extra text.\n\nTherefore, All objects are _____",
+        "generated": "books.",
+        "avg_probe_score": 0.2412109375,
+        "probe_probs": [
+          0.51171875,
+          0.2119140625,
+          0.0
+        ]
+      }
+    ],
+    "trial": 5,
+    "timestamp": "2025-09-30T16:27:21.104156"
+  }
+]

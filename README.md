@@ -201,21 +201,37 @@ venv/bin/python src/syllogistic_reasoning.py --num-trials 5 --log-file logs/my_s
 **Parameters:**
 - `--probe-id`: Probe to use (default: `llama3_1_8b_lora_lambda_kl=0.5`)
 - `--temperature`: Sampling temperature (default: 0.7)
-- `--num-trials`: Number of trials to run (default: 10)
+- `--num-trials`: Number of syllogism pairs to test (1 valid + 1 invalid each, default: 10)
 - `--log-file`: Path to log file (default: auto-generated with timestamp in logs/)
 
-**Results (N=10 trials, 60 syllogisms):**
-- Mean probe score for valid syllogisms: **0.0110** (std: 0.0057)
-- Mean probe score for invalid syllogisms: **0.0252** (std: 0.0132)
+**Results (N=100 pairs, 200 syllogisms total):**
+- Mean probe score for valid syllogisms: **0.1980** (std: 0.0838)
+- Mean probe score for invalid syllogisms: **0.2810** (std: 0.0815)
+- Difference: **+0.0830** (42% higher for invalid syllogisms)
 
-The probe produces significantly lower hallucination scores for valid syllogisms compared to invalid ones, indicating it detects logical reasoning errors.
+The probe produces significantly higher hallucination scores for invalid syllogisms compared to valid ones. The model is prompted to complete only the missing word(s) in the conclusion, allowing the probe to directly measure hallucination on the logical reasoning step itself.
 
-![Syllogistic Reasoning Results](logs/syllogistic_reasoning_20250930_133540_histogram.png)
+![Syllogistic Reasoning Results](logs/syllogistic_reasoning_20250930_163800_histogram.png)
+
+**Example prompt and completion:**
+```
+Given the following premises:
+
+1. All A are B
+2. All B are C
+3. All C are D
+
+Complete this conclusion with ONLY the missing word(s). Do not explain or add extra text.
+
+Therefore, All A are _____
+
+Model output: "D" (probe score: 0.12)
+```
 
 **Analyzing Results:**
 ```bash
 # Plot histogram of probe scores
-venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_133540.jsonl
+venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_163800.jsonl
 
 # Custom output location and bins
 venv/bin/python src/plot_syllogism_histogram.py logs/experiment.jsonl --output plots/histogram.png --bins 40
