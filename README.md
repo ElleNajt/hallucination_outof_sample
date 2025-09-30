@@ -173,6 +173,59 @@ venv/bin/python src/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job:
 
 ![Two Truths About Me Results](logs/two_truths_about_me_20250930_120638_plot.png)
 
+### 3. Syllogistic Reasoning (`src/syllogistic_reasoning.py`)
+
+Tests whether the hallucination probe can distinguish between valid and invalid syllogisms.
+
+**How it works:**
+1. Generates both valid and invalid syllogisms with various logical patterns
+2. Valid patterns include: Barbara (transitive), Darii, Celarent, Ferio, Extended transitivity
+3. Invalid patterns include: Affirming the consequent, Denying the antecedent, Invalid conversion, Existential to universal, Illicit major term
+4. Model is prompted to complete each syllogism's conclusion
+5. Probe analyzes the completion and calculates average hallucination probability
+6. Valid syllogisms should produce LOW probe scores (correct reasoning)
+7. Invalid syllogisms should produce HIGH probe scores (flawed reasoning)
+
+**Usage:**
+```bash
+# Run with default settings (10 trials)
+venv/bin/python src/syllogistic_reasoning.py
+
+# Run with custom number of trials
+venv/bin/python src/syllogistic_reasoning.py --num-trials 20
+
+# Custom log file
+venv/bin/python src/syllogistic_reasoning.py --num-trials 5 --log-file logs/my_syllogisms.jsonl
+```
+
+**Parameters:**
+- `--probe-id`: Probe to use (default: `llama3_1_8b_lora_lambda_kl=0.5`)
+- `--temperature`: Sampling temperature (default: 0.7)
+- `--num-trials`: Number of trials to run (default: 10)
+- `--log-file`: Path to log file (default: auto-generated with timestamp in logs/)
+
+**Results (N=10 trials, 60 syllogisms):**
+- Overall accuracy: **83.3%** (50/60 correctly classified)
+- Valid syllogisms correctly identified: **86.7%** (26/30)
+- Invalid syllogisms correctly identified: **80.0%** (24/30)
+- Mean probe score for valid syllogisms: 0.0110
+- Mean probe score for invalid syllogisms: 0.0252
+- Optimal threshold: 0.0163
+- Random chance baseline: **50.0%**
+
+The probe successfully distinguishes valid from invalid logical reasoning, with valid syllogisms producing significantly lower hallucination scores than invalid ones.
+
+![Syllogistic Reasoning Results](logs/syllogistic_reasoning_20250930_133540_plot.png)
+
+**Analyzing Results:**
+```bash
+# Analyze and plot results from a log file
+venv/bin/python src/analyze_syllogisms.py logs/syllogistic_reasoning_20250930_133540.jsonl
+
+# Custom output location
+venv/bin/python src/analyze_syllogisms.py logs/experiment.jsonl --output plots/results.png
+```
+
 ## Additional Tools
 
 ### CLI Interface
