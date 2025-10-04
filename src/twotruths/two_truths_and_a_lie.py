@@ -97,12 +97,12 @@ def parse_statements(text: str) -> List[str]:
 
 
 def calculate_statement_scores(
-    tokens: List[str], probs: List[float]
-) -> Tuple[Dict[int, float], Dict[int, float], Dict[int, float]]:
+    tokens: List[str], probs: List[float], entropies: List[float] = None
+) -> Tuple[Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float]]:
     """
-    Calculate average, sum, and max probe probabilities for each statement.
+    Calculate average, sum, and max probe probabilities and entropies for each statement.
 
-    Returns three dicts mapping statement number (1-indexed) to avg, sum, and max probabilities.
+    Returns six dicts mapping statement number (1-indexed) to avg/sum/max probe scores and avg/sum/max entropies.
     """
     # Find positions of statement number tokens (1, 2, 3)
     boundaries = []
@@ -114,6 +114,10 @@ def calculate_statement_scores(
     avg_scores = {}
     sum_scores = {}
     max_scores = {}
+    avg_entropies = {}
+    sum_entropies = {}
+    max_entropies = {}
+
     for stmt_num in [1, 2, 3]:
         if stmt_num - 1 < len(boundaries):
             start_idx = boundaries[stmt_num - 1]
@@ -130,12 +134,31 @@ def calculate_statement_scores(
                 avg_scores[stmt_num] = 0.0
                 sum_scores[stmt_num] = 0.0
                 max_scores[stmt_num] = 0.0
+
+            # Calculate entropy scores if available
+            if entropies and len(entropies) > start_idx:
+                statement_entropies = entropies[start_idx:end_idx]
+                if statement_entropies:
+                    avg_entropies[stmt_num] = sum(statement_entropies) / len(statement_entropies)
+                    sum_entropies[stmt_num] = sum(statement_entropies)
+                    max_entropies[stmt_num] = max(statement_entropies)
+                else:
+                    avg_entropies[stmt_num] = 0.0
+                    sum_entropies[stmt_num] = 0.0
+                    max_entropies[stmt_num] = 0.0
+            else:
+                avg_entropies[stmt_num] = 0.0
+                sum_entropies[stmt_num] = 0.0
+                max_entropies[stmt_num] = 0.0
         else:
             avg_scores[stmt_num] = 0.0
             sum_scores[stmt_num] = 0.0
             max_scores[stmt_num] = 0.0
+            avg_entropies[stmt_num] = 0.0
+            sum_entropies[stmt_num] = 0.0
+            max_entropies[stmt_num] = 0.0
 
-    return avg_scores, sum_scores, max_scores
+    return avg_scores, sum_scores, max_scores, avg_entropies, sum_entropies, max_entropies
 
 
 def ask_for_lie(
@@ -207,10 +230,10 @@ def run_experiment(
     for i, stmt in enumerate(statements, 1):
         print(f"  {i}. {stmt}")
 
-    # Step 2: Calculate probe scores for each statement
+    # Step 2: Calculate probe scores and entropies for each statement
     print("\n🔍 Analyzing with probe...")
-    avg_scores, sum_scores, max_scores = calculate_statement_scores(
-        result["generated_tokens"], result["probe_probs"]
+    avg_scores, sum_scores, max_scores, avg_entropies, sum_entropies, max_entropies = calculate_statement_scores(
+        result["generated_tokens"], result["probe_probs"], result.get("token_entropies", [])
     )
 
     print("\n📊 Probe scores (higher = more likely to be a lie):")
@@ -220,14 +243,32 @@ def run_experiment(
         maximum = max_scores.get(i, 0.0)
         print(f"  Statement {i}: avg={avg:.4f}, sum={total:.4f}, max={maximum:.4f}")
 
+    print("\n📊 Entropy scores (higher = more uncertainty):")
+    for i in range(1, 4):
+        avg_ent = avg_entropies.get(i, 0.0)
+        sum_ent = sum_entropies.get(i, 0.0)
+        max_ent = max_entropies.get(i, 0.0)
+        print(f"  Statement {i}: avg={avg_ent:.4f}, sum={sum_ent:.4f}, max={max_ent:.4f}")
+
     # Step 3: Probe's guesses (using different metrics)
     probe_guess_avg = max(avg_scores.items(), key=lambda x: x[1])[0]
     probe_guess_sum = max(sum_scores.items(), key=lambda x: x[1])[0]
     probe_guess_max = max(max_scores.items(), key=lambda x: x[1])[0]
+
+    # Entropy-based guesses
+    entropy_guess_avg = max(avg_entropies.items(), key=lambda x: x[1])[0]
+    entropy_guess_sum = max(sum_entropies.items(), key=lambda x: x[1])[0]
+    entropy_guess_max = max(max_entropies.items(), key=lambda x: x[1])[0]
+
     print(f"\n🤖 Probe guesses the lie is:")
     print(f"   Using avg: Statement {probe_guess_avg}")
     print(f"   Using sum: Statement {probe_guess_sum}")
     print(f"   Using max: Statement {probe_guess_max}")
+
+    print(f"\n🤖 Entropy guesses the lie is:")
+    print(f"   Using avg: Statement {entropy_guess_avg}")
+    print(f"   Using sum: Statement {entropy_guess_sum}")
+    print(f"   Using max: Statement {entropy_guess_max}")
 
     # Step 4: Ask model for the answer
     print("\n🤔 Asking model for the answer...")
@@ -244,11 +285,19 @@ def run_experiment(
     correct_sum = probe_guess_sum == model_answer
     correct_max = probe_guess_max == model_answer
 
+    entropy_correct_avg = entropy_guess_avg == model_answer
+    entropy_correct_sum = entropy_guess_sum == model_answer
+    entropy_correct_max = entropy_guess_max == model_answer
+
     print(f"\n{'=' * 80}")
-    print(f"Results:")
+    print(f"Probe Results:")
     print(f"  Using avg: {'🎉 CORRECT!' if correct_avg else '❌ INCORRECT'}")
     print(f"  Using sum: {'🎉 CORRECT!' if correct_sum else '❌ INCORRECT'}")
     print(f"  Using max: {'🎉 CORRECT!' if correct_max else '❌ INCORRECT'}")
+    print(f"\nEntropy Results:")
+    print(f"  Using avg: {'🎉 CORRECT!' if entropy_correct_avg else '❌ INCORRECT'}")
+    print(f"  Using sum: {'🎉 CORRECT!' if entropy_correct_sum else '❌ INCORRECT'}")
+    print(f"  Using max: {'🎉 CORRECT!' if entropy_correct_max else '❌ INCORRECT'}")
     print(f"{'=' * 80}\n")
 
     return {
@@ -258,13 +307,22 @@ def run_experiment(
         "avg_scores": avg_scores,
         "sum_scores": sum_scores,
         "max_scores": max_scores,
+        "avg_entropies": avg_entropies,
+        "sum_entropies": sum_entropies,
+        "max_entropies": max_entropies,
         "probe_guess_avg": probe_guess_avg,
         "probe_guess_sum": probe_guess_sum,
         "probe_guess_max": probe_guess_max,
+        "entropy_guess_avg": entropy_guess_avg,
+        "entropy_guess_sum": entropy_guess_sum,
+        "entropy_guess_max": entropy_guess_max,
         "model_answer": model_answer,
         "probe_correct_avg": correct_avg,
         "probe_correct_sum": correct_sum,
         "probe_correct_max": correct_max,
+        "entropy_correct_avg": entropy_correct_avg,
+        "entropy_correct_sum": entropy_correct_sum,
+        "entropy_correct_max": entropy_correct_max,
     }
 
 
@@ -404,14 +462,31 @@ def main():
             correct_avg = sum(1 for r in results if r["probe_correct_avg"])
             correct_sum = sum(1 for r in results if r["probe_correct_sum"])
             correct_max = sum(1 for r in results if r["probe_correct_max"])
+
+            entropy_correct_avg = sum(1 for r in results if r["entropy_correct_avg"])
+            entropy_correct_sum = sum(1 for r in results if r["entropy_correct_sum"])
+            entropy_correct_max = sum(1 for r in results if r["entropy_correct_max"])
+
+            print("\nProbe Results:")
             print(
-                f"Probe correct (avg): {correct_avg}/{len(results)} ({correct_avg / len(results) * 100:.1f}%)"
+                f"  Probe correct (avg): {correct_avg}/{len(results)} ({correct_avg / len(results) * 100:.1f}%)"
             )
             print(
-                f"Probe correct (sum): {correct_sum}/{len(results)} ({correct_sum / len(results) * 100:.1f}%)"
+                f"  Probe correct (sum): {correct_sum}/{len(results)} ({correct_sum / len(results) * 100:.1f}%)"
             )
             print(
-                f"Probe correct (max): {correct_max}/{len(results)} ({correct_max / len(results) * 100:.1f}%)"
+                f"  Probe correct (max): {correct_max}/{len(results)} ({correct_max / len(results) * 100:.1f}%)"
+            )
+
+            print("\nEntropy Baseline Results:")
+            print(
+                f"  Entropy correct (avg): {entropy_correct_avg}/{len(results)} ({entropy_correct_avg / len(results) * 100:.1f}%)"
+            )
+            print(
+                f"  Entropy correct (sum): {entropy_correct_sum}/{len(results)} ({entropy_correct_sum / len(results) * 100:.1f}%)"
+            )
+            print(
+                f"  Entropy correct (max): {entropy_correct_max}/{len(results)} ({entropy_correct_max / len(results) * 100:.1f}%)"
             )
 
         if failed_trials:

@@ -2,7 +2,14 @@
 
 Out-of-distribution experiments to test the generalization of hallucination detection probes from [hallucination_probes](https://github.com/obalcells/hallucination_probes).
 
-These experiments evaluate whether probes trained on specific datasets can detect hallucinations in different task formats and domains.
+These experiments evaluate whether probes trained on specific datasets can detect hallucinations in different task formats and domains, and compare performance against token-level entropy baselines.
+
+## Key Findings
+
+**Probe vs Entropy Baseline:**
+- **Two Truths and a Lie**: Probe achieves 70-72% accuracy vs entropy's 53-58% (**+12-18 pp advantage**), demonstrating hallucination-specific learning beyond general uncertainty
+- **Two Truths About Me**: Probe achieves 79-82% accuracy vs entropy's 73-79% (**0-8 pp advantage**), with entropy nearly matching probe performance on sum aggregation (both 79%)
+- The probe's advantage varies by task, suggesting some hallucination patterns are captured by general uncertainty while others require specialized detection
 
 ## Quick Start
 
@@ -79,21 +86,21 @@ pip install -r requirements.txt
 
 ```bash
 # Run two truths and a lie experiment with 10 trials
-venv/bin/python src/two_truths_and_a_lie.py --num-trials 10
+venv/bin/python src/twotruths/two_truths_and_a_lie.py --num-trials 10
 
 # Run with specific topic
-venv/bin/python src/two_truths_and_a_lie.py "quantum physics" --num-trials 5
+venv/bin/python src/twotruths/two_truths_and_a_lie.py "quantum physics" --num-trials 5
 
 # Run two truths about me with generated facts
-venv/bin/python src/two_truths_about_me.py --num-trials 5
+venv/bin/python src/twotruths/two_truths_about_me.py --num-trials 5
 
 # Run with specific facts about a person
-venv/bin/python src/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job: Teacher"
+venv/bin/python src/twotruths/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job: Teacher"
 ```
 
 ## Experiments
 
-### 1. Two Truths and a Lie (`src/two_truths_and_a_lie.py`)
+### 1. Two Truths and a Lie (`src/twotruths/two_truths_and_a_lie.py`)
 
 Tests whether the hallucination probe can identify which statement is a lie when the model generates two truths and a lie about a topic.
 
@@ -107,13 +114,13 @@ Tests whether the hallucination probe can identify which statement is a lie when
 **Usage:**
 ```bash
 # With auto-generated topics
-venv/bin/python src/two_truths_and_a_lie.py --num-trials 10
+venv/bin/python src/twotruths/two_truths_and_a_lie.py --num-trials 10
 
 # With specific topic
-venv/bin/python src/two_truths_and_a_lie.py "quantum physics" --num-trials 5
+venv/bin/python src/twotruths/two_truths_and_a_lie.py "quantum physics" --num-trials 5
 
 # Custom log file
-venv/bin/python src/two_truths_and_a_lie.py --num-trials 3 --log-file logs/my_experiment.jsonl
+venv/bin/python src/twotruths/two_truths_and_a_lie.py --num-trials 3 --log-file logs/my_experiment.jsonl
 ```
 
 **Parameters:**
@@ -128,15 +135,15 @@ venv/bin/python src/two_truths_and_a_lie.py --num-trials 3 --log-file logs/my_ex
 - JSON log file with detailed results for each trial
 - Summary statistics if multiple trials
 
-**Results (N=100 trials):**
-- Probe accuracy: **86.7%** (85/98 successful trials)
-- Failed trials: 2 (timeouts)
-- Mean confidence ratio: 4.550
-- The probe successfully generalized to this out-of-distribution task format
+**Results (N=99 trials with entropy baseline):**
+- Probe accuracy: **70-72%** (avg: 71.7%, sum: 69.7%, max: 70.7%)
+- Entropy baseline: **53-58%** (avg: 57.6%, sum: 57.6%, max: 52.5%)
+- **Probe advantage: +12-18 percentage points** over entropy baseline
+- The probe significantly outperforms token-level entropy, indicating it has learned hallucination-specific patterns beyond general uncertainty
 
-![Two Truths and a Lie Results](logs/two_truths_and_a_lie_20250930_015310_plot.png)
+![Probe vs Entropy Baseline](src/logs/two_truths_and_a_lie_20251002_202721_probe_vs_entropy.png)
 
-### 2. Two Truths About Me (`src/two_truths_about_me.py`)
+### 2. Two Truths About Me (`src/twotruths/two_truths_about_me.py`)
 
 Variant where the model is given facts about a person and must generate two truths and a lie based on those facts.
 
@@ -149,13 +156,13 @@ Variant where the model is given facts about a person and must generate two trut
 **Usage:**
 ```bash
 # With specific facts
-venv/bin/python src/two_truths_about_me.py --facts "My name is Bob" "I am 35" "I am a plumber" "I like dogs"
+venv/bin/python src/twotruths/two_truths_about_me.py --facts "My name is Bob" "I am 35" "I am a plumber" "I like dogs"
 
 # With auto-generated facts
-venv/bin/python src/two_truths_about_me.py --num-trials 5
+venv/bin/python src/twotruths/two_truths_about_me.py --num-trials 5
 
 # Multiple trials with same facts
-venv/bin/python src/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job: Teacher" --num-trials 3
+venv/bin/python src/twotruths/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job: Teacher" --num-trials 3
 ```
 
 **Parameters:**
@@ -165,15 +172,15 @@ venv/bin/python src/two_truths_about_me.py --facts "Name: Alice" "Age: 28" "Job:
 - `--num-trials`: Number of trials to run (default: 1)
 - `--log-file`: Path to log file (default: auto-generated with timestamp)
 
-**Results (N=100 trials):**
-- Probe accuracy: **87.0%** (87/100 successful trials)
-- Failed trials: 0
-- Mean confidence ratio: 3.407
-- The probe successfully generalized to this variant with slightly lower confidence ratios
+**Results (N=100 trials with entropy baseline):**
+- Probe accuracy: **79-82%** (avg: 82.0%, sum: 79.0%, max: 81.0%)
+- Entropy baseline: **73-79%** (avg: 78.0%, sum: 79.0%, max: 73.0%)
+- **Probe advantage: 0-8 percentage points** over entropy baseline
+- Entropy baseline nearly matches probe performance on this variant (tied at 79% using sum aggregation), suggesting the task may rely more on general uncertainty
 
-![Two Truths About Me Results](logs/two_truths_about_me_20250930_120638_plot.png)
+![Probe vs Entropy Baseline](src/logs/two_truths_about_me_20251003_113734_probe_vs_entropy.png)
 
-### 3. Syllogistic Reasoning (`src/syllogistic_reasoning.py`)
+### 3. Syllogistic Reasoning (`src/syllogisms/syllogistic_reasoning.py`)
 
 Tests whether the hallucination probe can distinguish between valid and invalid syllogisms.
 
@@ -189,13 +196,13 @@ Tests whether the hallucination probe can distinguish between valid and invalid 
 **Usage:**
 ```bash
 # Run with default settings (10 trials)
-venv/bin/python src/syllogistic_reasoning.py
+venv/bin/python src/syllogisms/syllogistic_reasoning.py
 
 # Run with custom number of trials
-venv/bin/python src/syllogistic_reasoning.py --num-trials 20
+venv/bin/python src/syllogisms/syllogistic_reasoning.py --num-trials 20
 
 # Custom log file
-venv/bin/python src/syllogistic_reasoning.py --num-trials 5 --log-file logs/my_syllogisms.jsonl
+venv/bin/python src/syllogisms/syllogistic_reasoning.py --num-trials 5 --log-file logs/my_syllogisms.jsonl
 ```
 
 **Parameters:**
@@ -241,12 +248,58 @@ Model output: "D" (probe score: 0.12)
 **Analyzing Results:**
 ```bash
 # Plot histogram of probe scores (avg, sum, or max)
-venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type avg
-venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type sum
-venv/bin/python src/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type max
+venv/bin/python src/syllogisms/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type avg
+venv/bin/python src/syllogisms/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type sum
+venv/bin/python src/syllogisms/plot_syllogism_histogram.py logs/syllogistic_reasoning_20250930_165545.jsonl --score-type max
 
 # Custom output location and bins
-venv/bin/python src/plot_syllogism_histogram.py logs/experiment.jsonl --score-type avg --output plots/histogram.png --bins 40
+venv/bin/python src/syllogisms/plot_syllogism_histogram.py logs/experiment.jsonl --score-type avg --output plots/histogram.png --bins 40
+```
+
+### 4. Recipe Vagueness (`src/vagueness/recipe_vagueness.py`)
+
+Tests whether the hallucination probe detects when the model confidently answers questions about vague/underspecified information.
+
+**How it works:**
+1. Generate simple recipes with precise quantities (e.g., "10 grams of flour")
+2. Obfuscate some quantities to be vague (e.g., "a pinch of salt", "some sugar")
+3. Ask the model "How many grams of X?" for vague ingredients
+4. Measure probe scores when model makes up specific amounts
+
+**Usage:**
+```bash
+# Run with default settings (10 trials)
+venv/bin/python src/vagueness/recipe_vagueness.py
+
+# Run with custom number of trials
+venv/bin/python src/vagueness/recipe_vagueness.py --num-trials 100
+
+# Custom log file
+venv/bin/python src/vagueness/recipe_vagueness.py --num-trials 50 --log-file logs/my_vagueness.jsonl
+```
+
+**Parameters:**
+- `--probe-id`: Probe to use (default: `llama3_1_8b_lora_lambda_kl=0.5`)
+- `--temperature`: Sampling temperature (default: 0.0)
+- `--num-trials`: Number of trials to run (default: 10)
+- `--log-file`: Path to log file (default: auto-generated with timestamp in logs/)
+
+**Results (N=5 trials, preliminary):**
+- Average probe scores when answering vague questions:
+  - Avg: 0.4117
+  - Sum: 1.4481
+  - Max: 0.7863
+- The probe shows moderate-to-high scores, suggesting it detects the model's uncertainty when forced to make up specific numbers for vague quantities
+
+**Example:**
+```
+Recipe:
+- 150 grams of flour
+- a handful of sugar
+- 25 grams of butter
+
+Question: How many grams of sugar?
+Model: "25" (avg probe score: 0.32, sum: 0.64, max: 0.64)
 ```
 
 ## Additional Tools
@@ -299,17 +352,37 @@ See the [repository](https://huggingface.co/andyrdt/hallucination-probes) for fu
 
 ### Plot Results
 
+#### Probe vs Entropy Baseline Comparison
+
+Compare hallucination probe performance against token-level entropy baseline:
+
+```bash
+# Generate comparison plot
+venv/bin/python src/twotruths/plot_probe_vs_entropy.py src/logs/two_truths_and_a_lie_20251002_202721.jsonl
+
+# Custom output location
+venv/bin/python src/twotruths/plot_probe_vs_entropy.py src/logs/experiment.jsonl --output plots/comparison.png
+```
+
+The script creates a bar chart comparing:
+- Probe accuracy (avg/sum/max aggregation)
+- Entropy baseline accuracy (avg/sum/max aggregation)
+- Shows probe advantage in percentage points
+- Includes random chance baseline (33.3%)
+
+#### Accuracy vs Confidence Plot
+
 Analyze experiment results and plot accuracy vs confidence:
 
 ```bash
-# Plot results from two truths experiments
-venv/bin/python src/plot_results.py logs/two_truths_and_a_lie_20250930_010301.jsonl
+# Plot results from two truths experiments (legacy format)
+venv/bin/python src/twotruths/plot_results.py logs/two_truths_and_a_lie_20250930_010301.jsonl
 
 # Save plot to specific location
-venv/bin/python src/plot_results.py logs/experiment.jsonl --output plots/results.png
+venv/bin/python src/twotruths/plot_results.py logs/experiment.jsonl --output plots/results.png
 
 # Custom title and number of bins
-venv/bin/python src/plot_results.py logs/experiment.jsonl --title "My Experiment" --bins 15
+venv/bin/python src/twotruths/plot_results.py logs/experiment.jsonl --title "My Experiment" --bins 15
 ```
 
 The plotting script:
@@ -340,10 +413,10 @@ Use the deployment script to deploy the Modal backend:
 
 ```bash
 # Deploy with default settings (8B model, 1 GPU)
-./venv/bin/python src/deploy_backend.py
+./venv/bin/python src/backend/deploy_backend.py
 
 # Deploy with custom model and GPU count (passed to experiments via switch_model())
-./venv/bin/python src/deploy_backend.py --model meta-llama/Meta-Llama-3.1-70B-Instruct --gpus 2
+./venv/bin/python src/backend/deploy_backend.py --model meta-llama/Meta-Llama-3.1-70B-Instruct --gpus 2
 ```
 
 The deployment script (`src/deploy_backend.py`):

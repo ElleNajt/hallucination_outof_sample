@@ -109,20 +109,36 @@ def run_experiment(
     for i, stmt in enumerate(statements, 1):
         print(f"  {i}. {stmt}")
 
-    # Step 2: Calculate probe scores for each statement
+    # Step 2: Calculate probe scores and entropy for each statement
     print("\n🔍 Analyzing with probe...")
-    statement_scores = calculate_statement_scores(
-        result["generated_tokens"], result["probe_probs"], statements, generated_text
+    avg_scores, sum_scores, max_scores, avg_entropies, sum_entropies, max_entropies = calculate_statement_scores(
+        result["generated_tokens"], result["probe_probs"], result.get("token_entropies", [])
     )
 
     print("\n📊 Probe scores (higher = more likely to be a lie):")
     for i in range(1, 4):
-        score = statement_scores.get(i, 0.0)
-        print(f"  Statement {i}: {score:.4f}")
+        print(f"  Statement {i}: avg={avg_scores.get(i, 0.0):.4f}, sum={sum_scores.get(i, 0.0):.4f}, max={max_scores.get(i, 0.0):.4f}")
 
     # Step 3: Probe's guess (highest score)
-    probe_guess = max(statement_scores.items(), key=lambda x: x[1])[0]
-    print(f"\n🤖 Probe guesses the lie is: Statement {probe_guess}")
+    probe_guess_avg = max(avg_scores.items(), key=lambda x: x[1])[0]
+    probe_guess_sum = max(sum_scores.items(), key=lambda x: x[1])[0]
+    probe_guess_max = max(max_scores.items(), key=lambda x: x[1])[0]
+
+    print(f"\n🤖 Probe guesses the lie is:")
+    print(f"   Using avg: Statement {probe_guess_avg}")
+    print(f"   Using sum: Statement {probe_guess_sum}")
+    print(f"   Using max: Statement {probe_guess_max}")
+
+    # Entropy guesses
+    if avg_entropies:
+        entropy_guess_avg = max(avg_entropies.items(), key=lambda x: x[1])[0]
+        entropy_guess_sum = max(sum_entropies.items(), key=lambda x: x[1])[0]
+        entropy_guess_max = max(max_entropies.items(), key=lambda x: x[1])[0]
+
+        print(f"\n📈 Entropy baseline guesses the lie is:")
+        print(f"   Using avg: Statement {entropy_guess_avg}")
+        print(f"   Using sum: Statement {entropy_guess_sum}")
+        print(f"   Using max: Statement {entropy_guess_max}")
 
     # Step 4: Ask model for the answer
     print("\n🤔 Asking model for the answer...")
@@ -135,23 +151,56 @@ def run_experiment(
     print(f"✅ Model says the lie is: Statement {model_answer}")
 
     # Step 5: Compare
-    correct = probe_guess == model_answer
+    probe_correct_avg = probe_guess_avg == model_answer
+    probe_correct_sum = probe_guess_sum == model_answer
+    probe_correct_max = probe_guess_max == model_answer
+
     print(f"\n{'=' * 80}")
-    if correct:
-        print("🎉 PROBE WAS CORRECT!")
-    else:
-        print("❌ PROBE WAS INCORRECT")
+    print("Results:")
+    print(f"  Probe (avg): {'🎉 CORRECT!' if probe_correct_avg else '❌ INCORRECT'}")
+    print(f"  Probe (sum): {'🎉 CORRECT!' if probe_correct_sum else '❌ INCORRECT'}")
+    print(f"  Probe (max): {'🎉 CORRECT!' if probe_correct_max else '❌ INCORRECT'}")
+
+    if avg_entropies:
+        entropy_correct_avg = entropy_guess_avg == model_answer
+        entropy_correct_sum = entropy_guess_sum == model_answer
+        entropy_correct_max = entropy_guess_max == model_answer
+
+        print(f"  Entropy (avg): {'🎉 CORRECT!' if entropy_correct_avg else '❌ INCORRECT'}")
+        print(f"  Entropy (sum): {'🎉 CORRECT!' if entropy_correct_sum else '❌ INCORRECT'}")
+        print(f"  Entropy (max): {'🎉 CORRECT!' if entropy_correct_max else '❌ INCORRECT'}")
     print(f"{'=' * 80}\n")
 
-    return {
+    result_dict = {
         "success": True,
         "facts": facts,
         "statements": statements,
-        "statement_scores": statement_scores,
-        "probe_guess": probe_guess,
+        "avg_scores": {str(k): v for k, v in avg_scores.items()},
+        "sum_scores": {str(k): v for k, v in sum_scores.items()},
+        "max_scores": {str(k): v for k, v in max_scores.items()},
+        "probe_guess_avg": probe_guess_avg,
+        "probe_guess_sum": probe_guess_sum,
+        "probe_guess_max": probe_guess_max,
         "model_answer": model_answer,
-        "probe_correct": correct,
+        "probe_correct_avg": probe_correct_avg,
+        "probe_correct_sum": probe_correct_sum,
+        "probe_correct_max": probe_correct_max,
     }
+
+    if avg_entropies:
+        result_dict.update({
+            "avg_entropies": {str(k): v for k, v in avg_entropies.items()},
+            "sum_entropies": {str(k): v for k, v in sum_entropies.items()},
+            "max_entropies": {str(k): v for k, v in max_entropies.items()},
+            "entropy_guess_avg": entropy_guess_avg,
+            "entropy_guess_sum": entropy_guess_sum,
+            "entropy_guess_max": entropy_guess_max,
+            "entropy_correct_avg": entropy_correct_avg,
+            "entropy_correct_sum": entropy_correct_sum,
+            "entropy_correct_max": entropy_correct_max,
+        })
+
+    return result_dict
 
 
 def generate_random_facts(
@@ -323,10 +372,25 @@ def main():
         print(f"Failed trials: {len(failed_trials)}")
 
         if results:
-            correct = sum(1 for r in results if r["probe_correct"])
-            print(
-                f"Probe correct: {correct}/{len(results)} ({correct / len(results) * 100:.1f}%)"
-            )
+            probe_correct_avg = sum(1 for r in results if r["probe_correct_avg"])
+            probe_correct_sum = sum(1 for r in results if r["probe_correct_sum"])
+            probe_correct_max = sum(1 for r in results if r["probe_correct_max"])
+
+            print(f"\nProbe accuracy:")
+            print(f"  Using avg: {probe_correct_avg}/{len(results)} ({probe_correct_avg / len(results) * 100:.1f}%)")
+            print(f"  Using sum: {probe_correct_sum}/{len(results)} ({probe_correct_sum / len(results) * 100:.1f}%)")
+            print(f"  Using max: {probe_correct_max}/{len(results)} ({probe_correct_max / len(results) * 100:.1f}%)")
+
+            # Check if entropy data is available
+            if any("entropy_correct_avg" in r for r in results):
+                entropy_correct_avg = sum(1 for r in results if r.get("entropy_correct_avg", False))
+                entropy_correct_sum = sum(1 for r in results if r.get("entropy_correct_sum", False))
+                entropy_correct_max = sum(1 for r in results if r.get("entropy_correct_max", False))
+
+                print(f"\nEntropy accuracy:")
+                print(f"  Using avg: {entropy_correct_avg}/{len(results)} ({entropy_correct_avg / len(results) * 100:.1f}%)")
+                print(f"  Using sum: {entropy_correct_sum}/{len(results)} ({entropy_correct_sum / len(results) * 100:.1f}%)")
+                print(f"  Using max: {entropy_correct_max}/{len(results)} ({entropy_correct_max / len(results) * 100:.1f}%)")
 
         if failed_trials:
             print(f"\nFailed trial numbers: {[f['trial'] for f in failed_trials]}")
